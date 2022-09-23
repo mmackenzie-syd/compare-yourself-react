@@ -1,13 +1,52 @@
 import axios from "axios";
+import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js"
 
-const API_URL = "http://localhost:8080/api/auth/";
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+
+const POOL_DATA = {
+  UserPoolId: process.env.REACT_APP_USER_POOL_ID,
+  ClientId: process.env.REACT_APP_CLIENT_ID
+}
+
+const userPool = new CognitoUserPool(POOL_DATA);
 
 const register = (username, email, password) => {
-  return axios.post(API_URL + "signup", {
-    username,
-    email,
-    password,
-  });
+  return new Promise((resolve, reject) => {
+    const attrList = [];
+    const emailAttribute = {
+      Name: "email",
+      Value: email
+    };
+    attrList.push(new CognitoUserAttribute(emailAttribute));
+    userPool.signUp(username, password, attrList, null, (err, result) => {
+      if (err) {
+        console.log('registration error', err)
+        reject(err)
+      }
+      console.log("register: ", result)
+      resolve(result)
+    });
+  })
+};
+
+const confirm = (username, code) => {
+  return new Promise((resolve, reject) => {
+    const userData = {
+      Username: username,
+      Pool: userPool
+    };
+    const cognitoUser = new CognitoUser(userData);
+    cognitoUser.confirmRegistration(code, true, (err, result) => {
+      if (err) {
+        console.log('confirmation error', err)
+        reject(err)
+      }
+      console.log("confirmation: ", result)
+      resolve(result)
+    });
+  })
 };
 
 const login = (username, password) => {
@@ -38,6 +77,7 @@ const AuthService = {
   login,
   logout,
   getCurrentUser,
+  confirm
 };
 
 export default AuthService;

@@ -7,6 +7,7 @@ import AuthService from "./services/auth.service";
 
 import Login from "./components/Login";
 import Register from "./components/Register";
+import Confirm from "./components/Confirm";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
@@ -30,7 +31,7 @@ const App = () => {
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <Link to={"/"} className="navbar-brand">
-          bezKoder
+          Compare Yourself
         </Link>
         <div className="navbar-nav mr-auto">
           <li className="nav-item">
@@ -69,6 +70,12 @@ const App = () => {
             </li>
 
             <li className="nav-item">
+              <Link to={"/confirm"} className="nav-link">
+                Confirm
+              </Link>
+            </li>
+
+            <li className="nav-item">
               <Link to={"/register"} className="nav-link">
                 Sign Up
               </Link>
@@ -83,6 +90,7 @@ const App = () => {
           <Route path="/home" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
+          <Route path="/confirm" element={<Confirm/>} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/user" element={<BoardUser/>} />
         </Routes>
