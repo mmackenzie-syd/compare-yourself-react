@@ -9,19 +9,21 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Confirm from "./components/Confirm";
 import Home from "./components/Home";
+import Compare from "./components/Compare";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
+
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
 
-  useEffect(() => {
-    const user = AuthService.getCurrentUser();
+  // useEffect(() => {
+  //   const user = AuthService.getCurrentUser();
 
-    if (user) {
-      setCurrentUser(user);
-    }
-  }, []);
+  //   if (user) {
+  //     setCurrentUser(user);
+  //   }
+  // }, []);
 
   const logOut = () => {
     AuthService.logout();
@@ -37,6 +39,11 @@ const App = () => {
           <li className="nav-item">
             <Link to={"/home"} className="nav-link">
               Home
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to={"/compare"} className="nav-link">
+              Compare
             </Link>
           </li>
           {currentUser && (
@@ -88,6 +95,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/home" element={<Home/>} />
+          <Route path="/compare" element={<Compare/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
           <Route path="/confirm" element={<Confirm/>} />

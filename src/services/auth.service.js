@@ -1,5 +1,9 @@
-import axios from "axios";
-import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js"
+import { findAllByTestId } from "@testing-library/react";
+import { CognitoUserPool, 
+  CognitoUserAttribute, 
+  CognitoUser,
+  AuthenticationDetails
+} from "amazon-cognito-identity-js"
 
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -50,34 +54,64 @@ const confirm = (username, code) => {
 };
 
 const login = (username, password) => {
-  return axios
-    .post(API_URL + "signin", {
-      username,
-      password,
-    })
-    .then((response) => {
-      if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+  return new Promise((resolve, reject) => {
+    const attrList = [];
+    const authData = {
+      Username: username,
+      Password: password
+    };
+    const authDetails = new AuthenticationDetails(authData);
+    const userData = {
+      Username: username,
+      Pool: userPool
+    }
+    const cognitoUser = new CognitoUser(userData);
+    cognitoUser.authenticateUser(authDetails, {
+      onSuccess (result) {
+        console.log("logged in: ", result)
+        resolve(result)
+      },
+      onFailure(err) {
+        console.log("error logging in: ", err)
+        reject(err)
       }
-
-      return response.data;
     });
+  })
 };
 
 const logout = () => {
-  localStorage.removeItem("user");
+  userPool.getCurrentUser().signOut();
 };
 
-const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
-};
+const getAuthenticatedUser = () => {
+  return userPool.getCurrentUser();
+}
+
+const isAuthenticated = () => {
+  const user = userPool.getCurrentUser();
+  if (user) {
+    user.getSession((err, session) => {
+      if (err) {
+        return false;
+      }
+      if (session.isValid()) {
+        return true;
+      }
+      return false;
+    })
+    return true;
+  }
+  return false
+}
+
 
 const AuthService = {
   register,
   login,
   logout,
-  getCurrentUser,
-  confirm
+  getAuthenticatedUser,
+  confirm,
+  isAuthenticated
 };
 
 export default AuthService;
